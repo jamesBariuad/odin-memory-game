@@ -12,6 +12,12 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const [isLoading, setIsLoading] = useState(true)
 
+  useEffect(() => {
+    const pokemonCount = 10;
+
+    fetchPokemonDataXTimes(pokemonCount);
+  }, []);
+
   const handleGameOver = () => {
     if (hiScore < score) {
       setHiScore(score);
@@ -75,12 +81,6 @@ function App() {
     setScore(0)
     setChosenPokeIds([])
   };
-
-  useEffect(() => {
-    const pokemonCount = 10;
-
-    fetchPokemonDataXTimes(pokemonCount);
-  }, []);
 
   const generateRandomPokemonId = (min = 0, max = 1000) => {
     min = Math.ceil(min);
