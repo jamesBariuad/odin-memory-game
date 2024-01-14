@@ -3,14 +3,24 @@ import "./App.css";
 import axios from "axios";
 import PokemonList from "./components/PokemonList";
 import GameOverScreen from "./components/GameOverScreen";
+import Scores from "./components/Scores";
+import Instructions from "./components/Instructions";
 
 function App() {
-  const [pokemonData, setPokemonData] = useState([]);
-  const [score, setScore] = useState(0);
-  const [chosenPokeIds, setChosenPokeIds] = useState([]);
+  const [pokemonData, setPokemonData] = useState<PokemonData[]>([]);
+  const [score, setScore] = useState(8);
+  const [chosenPokeIds, setChosenPokeIds] = useState<string[]>([]);
   const [hiScore, setHiScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
+
+  interface PokemonData {
+    name: string;
+    id: number;
+    sprites: {
+      front_default: string;
+    };
+  }
 
   useEffect(() => {
     const pokemonCount = 10;
@@ -20,31 +30,37 @@ function App() {
 
   const handleGameOver = () => {
     if (hiScore < score) {
-      setHiScore(score);
-    }
-
-    if (score == pokemonData.length) {
-      console.log("Nice, you got a good memory!");
+      setHiScore(score + 1);
     }
 
     setGameOver(true);
   };
 
-  const handlePokemonClick = (e) => {
-    const pokeId = e.target.id;
+  const handlePokemonClick = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    const pokeId = e.currentTarget.id;
 
     if (chosenPokeIds.includes(pokeId)) {
       handleGameOver();
-      return console.log("gameOver");
+      return;
     }
 
+    if (score >= pokemonData.length - 1) {
+      if (score >= pokemonData.length) {
+        return;
+      }
+      setScore(() => score + 1);
+      handleGameOver();
+      return console.log("wow u got 10 right nice memory, nerd");
+    }
+
+    setScore(() => score + 1);
     setChosenPokeIds([...chosenPokeIds, pokeId]);
-    setScore(score + 1);
     shuffle(pokemonData);
   };
 
-
-  const shuffle = (array) => {
+  const shuffle = (array: PokemonData[]) => {
     const shuffledArray = [...array];
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -57,7 +73,7 @@ function App() {
     setPokemonData(shuffledArray);
   };
 
-  const fetchPokemonDataXTimes = async (pokemonCount) => {
+  const fetchPokemonDataXTimes = async (pokemonCount: number) => {
     const newData = [];
     for (let index = 0; index < pokemonCount; index++) {
       try {
@@ -70,19 +86,19 @@ function App() {
       }
     }
     setPokemonData(newData);
-    setIsLoading(false)
+    setIsLoading(false);
   };
 
   const startNewGame = () => {
     // setIsLoading(true)
     setGameOver(false);
     // fetchPokemonDataXTimes(10);
-    shuffle(pokemonData)
-    setScore(0)
-    setChosenPokeIds([])
+    shuffle(pokemonData);
+    setScore(0);
+    setChosenPokeIds([]);
   };
 
-  const generateRandomPokemonId = (min = 0, max = 1000) => {
+  const generateRandomPokemonId = (min = 1, max = 1000) => {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -91,16 +107,25 @@ function App() {
   return (
     <>
       <div className="position-relative">
-        score:{score}
-        hiScore:{hiScore}
-        <button onClick={() => shuffle(pokemonData)}>shuffle</button>
-        {isLoading?"loading..": (
+        <Scores score={score} hiScore={hiScore} />
+        <Instructions />        
+
+        {isLoading ? (
+          "Fetching Pokemons, Please Wait.."
+        ) : (
           <PokemonList
             pokemonData={pokemonData}
             handlePokemonClick={handlePokemonClick}
           />
         )}
-        {gameOver && <GameOverScreen  startNewGame={startNewGame} score={score} hiScore={hiScore}/>}
+
+        {gameOver && (
+          <GameOverScreen
+            startNewGame={startNewGame}
+            score={score}
+            hiScore={hiScore}
+          />
+        )}
       </div>
     </>
   );

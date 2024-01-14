@@ -1,6 +1,12 @@
-import React from "react";
 
-const GameOverScreen = ({ score, hiScore, startNewGame }) => {
+interface GameOverScreenProps{
+  score: number;
+  hiScore: number;
+  startNewGame: ()=>void
+
+}
+
+const GameOverScreen = ({ score, hiScore, startNewGame }:GameOverScreenProps) => {
   return (
     <div onClick={startNewGame}>
       <div className=" bg-black opacity-50 position-absolute vh-100 w-100 top-0 text-center"></div>
@@ -9,9 +15,9 @@ const GameOverScreen = ({ score, hiScore, startNewGame }) => {
         <br />
         Your Score: {score}
         <br />
-        Hi Score :{hiScore}
+        Hi Score: {hiScore}
         <br />
-        press anywhere to play again
+        click anywhere to play again
       </div>
     </div>
   );
