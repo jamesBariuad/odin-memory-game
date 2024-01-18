@@ -7,9 +7,8 @@ interface ScoresProps {
 
 const Scores = ({ score, hiScore }: ScoresProps) => {
   return (
-    <div>
-      score:{score}
-      hiScore:{hiScore}
+    <div className="fw-semibold">
+      Score: {score} || HiScore: {hiScore}
     </div>
   );
 };

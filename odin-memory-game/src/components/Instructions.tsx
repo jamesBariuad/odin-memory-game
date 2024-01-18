@@ -2,7 +2,7 @@
 
 const Instructions = () => {
   return (
-    <div>Don't Click the Same Pokemon Twice!</div>
+    <div className="fw-semibold">Don't Click the Same Pokemon Twice!</div>
   )
 }
 

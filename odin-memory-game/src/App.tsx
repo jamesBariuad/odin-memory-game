@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import "./App.css";
 import axios from "axios";
 import PokemonList from "./components/PokemonList";
 import GameOverScreen from "./components/GameOverScreen";
 import Scores from "./components/Scores";
 import Instructions from "./components/Instructions";
+import Loading from "./components/Loading";
 
 function App() {
   const [pokemonData, setPokemonData] = useState<PokemonData[]>([]);
-  const [score, setScore] = useState(8);
+  const [score, setScore] = useState(0);
   const [chosenPokeIds, setChosenPokeIds] = useState<string[]>([]);
   const [hiScore, setHiScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -90,13 +90,17 @@ function App() {
   };
 
   const startNewGame = () => {
-    // setIsLoading(true)
     setGameOver(false);
-    // fetchPokemonDataXTimes(10);
     shuffle(pokemonData);
     setScore(0);
     setChosenPokeIds([]);
   };
+
+  const fetchNewPokes = () => {
+    startNewGame()
+    setIsLoading(true)
+    fetchPokemonDataXTimes(10)
+  }
 
   const generateRandomPokemonId = (min = 1, max = 1000) => {
     min = Math.ceil(min);
@@ -106,27 +110,29 @@ function App() {
 
   return (
     <>
-      <div className="position-relative">
-        <Scores score={score} hiScore={hiScore} />
-        <Instructions />        
+      <div className=" container  min-vh-100 d-flex flex-column  bg-dark text-white bg-gradient mx-0 min-vw-100 p-sm-0">
+        <div className="d-flex justify-content-between mt-sm-5 mx-5 gap-2">
+          <Instructions />
+          <Scores score={score} hiScore={hiScore} />
+        </div>
 
         {isLoading ? (
-          "Fetching Pokemons, Please Wait.."
+          <Loading/>
         ) : (
           <PokemonList
             pokemonData={pokemonData}
             handlePokemonClick={handlePokemonClick}
           />
         )}
-
-        {gameOver && (
-          <GameOverScreen
-            startNewGame={startNewGame}
-            score={score}
-            hiScore={hiScore}
-          />
-        )}
       </div>
+      {gameOver && (
+        <GameOverScreen
+          startNewGame={startNewGame}
+          score={score}
+          hiScore={hiScore}
+          fetchNewPokes={fetchNewPokes}
+        />
+      )}
     </>
   );
 }
